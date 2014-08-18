@@ -33,10 +33,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.76913627"
-     inkscape:cx="-143.87486"
+     inkscape:cx="62.850539"
      inkscape:cy="300.08948"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1366"
      inkscape:window-height="653"
@@ -160,53 +160,48 @@
      style="display:inline"
      transform="translate(0,-572.36218)">
     <g
-       id="g3096"
-       transform="translate(3.9099448,148.44103)">
-      <g
-         id="ObjectA"
-         inkscape:label="#g3106">
-        <rect
-           style="fill:#f000f0;fill-opacity:1;stroke:none"
-           id="BlockPin"
-           width="40"
-           height="40"
-           x="76.009705"
-           y="783.69653"
-           inkscape:tile-cx="40"
-           inkscape:tile-cy="992.36218"
-           inkscape:tile-w="80"
-           inkscape:tile-h="80"
-           inkscape:tile-x0="0"
-           inkscape:tile-y0="952.36218"
-           inkscape:export-filename="/Users/thanh-vinh/Dropbox/Outsourcing/Source/PopTile/PopTile/Assets/Images/BlockPin.png"
-           inkscape:export-xdpi="90"
-           inkscape:export-ydpi="90"
-           inkscape:label="#rect3061" />
-        <text
-           xml:space="preserve"
-           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           x="89.173767"
-           y="810.98657"
-           id="text3080"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan3082"
-             x="89.173767"
-             y="810.98657"
-             style="font-size:20px;fill:#ffffff">A</tspan></text>
-      </g>
+       id="ObjectA"
+       inkscape:label="#g3027">
+      <rect
+         inkscape:label="#rect3061"
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="/Users/thanh-vinh/Dropbox/Outsourcing/Source/PopTile/PopTile/Assets/Images/BlockPin.png"
+         inkscape:tile-y0="952.36218"
+         inkscape:tile-x0="0"
+         inkscape:tile-h="80"
+         inkscape:tile-w="80"
+         inkscape:tile-cy="992.36218"
+         inkscape:tile-cx="40"
+         y="932.13757"
+         x="79.919647"
+         height="40"
+         width="40"
+         id="BlockPin"
+         style="fill:#f000f0;fill-opacity:1;stroke:none" />
+      <text
+         sodipodi:linespacing="125%"
+         id="text3080"
+         y="959.42761"
+         x="93.08371"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:20px;fill:#ffffff"
+           y="959.42761"
+           x="93.08371"
+           id="tspan3082"
+           sodipodi:role="line">A</tspan></text>
     </g>
     <g
        id="ObjectB"
-       inkscape:label="#g3101"
-       transform="translate(3.9099448,148.44103)">
+       inkscape:label="#g3032">
       <rect
          inkscape:label="#rect3971"
          inkscape:export-ydpi="90"
          inkscape:export-xdpi="90"
          inkscape:export-filename="/Users/thanh-vinh/Dropbox/Outsourcing/Source/PopTile/PopTile/Assets/Images/BlockPurple.png"
-         y="783.69653"
-         x="116.00971"
+         y="932.13757"
+         x="119.91965"
          height="40"
          width="40"
          id="BlockPurple"
@@ -214,27 +209,26 @@
       <text
          xml:space="preserve"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         x="128.87592"
-         y="810.98657"
+         x="132.78586"
+         y="959.42761"
          id="text3084"
          sodipodi:linespacing="125%"><tspan
            sodipodi:role="line"
            id="tspan3086"
-           x="128.87592"
-           y="810.98657"
+           x="132.78586"
+           y="959.42761"
            style="font-size:20px;fill:#ffffff">B</tspan></text>
     </g>
     <g
        id="ObjectC"
-       inkscape:label="#g3111"
-       transform="translate(3.9099448,148.44103)">
+       inkscape:label="#g3037">
       <rect
          inkscape:label="#rect3967"
          inkscape:export-ydpi="90"
          inkscape:export-xdpi="90"
          inkscape:export-filename="/Users/thanh-vinh/Dropbox/Outsourcing/Source/PopTile/PopTile/Assets/Images/BlockWhite.png"
-         y="783.69653"
-         x="156.0097"
+         y="932.13757"
+         x="159.91965"
          height="40"
          width="40"
          id="BlockWhite"
@@ -242,19 +236,19 @@
       <text
          sodipodi:linespacing="125%"
          id="text3088"
-         y="810.97681"
-         x="169.00775"
+         y="959.41785"
+         x="172.91769"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
            style="font-size:20px;fill:#000000"
-           y="810.97681"
-           x="169.00775"
+           y="959.41785"
+           x="172.91769"
            id="tspan3090"
            sodipodi:role="line">C</tspan></text>
     </g>
     <g
-       id="g3116"
-       transform="translate(3.9099448,148.44103)">
+       id="ObjectD"
+       inkscape:label="#g3042">
       <rect
          inkscape:label="#rect3969"
          inkscape:export-ydpi="90"
@@ -264,20 +258,20 @@
          id="BlockBlue"
          width="40"
          height="40"
-         x="196.0097"
-         y="783.69653" />
+         x="199.91965"
+         y="932.13757" />
       <text
          sodipodi:linespacing="125%"
          id="text3092"
-         y="810.98657"
-         x="208.87592"
+         y="959.42761"
+         x="212.78586"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
          xml:space="preserve"><tspan
            style="font-size:20px;fill:#ffffff"
-           y="810.98657"
-           x="208.87592"
+           y="959.42761"
+           x="212.78586"
            id="tspan3094"
-           sodipodi:role="line">B</tspan></text>
+           sodipodi:role="line">D</tspan></text>
     </g>
   </g>
 </svg>
