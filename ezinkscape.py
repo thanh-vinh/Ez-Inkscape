@@ -1,6 +1,7 @@
-# ezsvg
-# GUI/Level editor by InkScape
+# EzInkscape
+# GUI/Level editor for InkScape
 # and more...
+# Author: Thanh Vinh<thanh.vinh@hotmail.com>
 
 import argparse
 import subprocess
