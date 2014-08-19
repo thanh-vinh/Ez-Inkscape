@@ -106,7 +106,7 @@ class Source:
     @staticmethod
     def getsource(typename, variable, value, language):
         if language == 'm':
-            return 'const {0} {1} = {2};'.format(typename, variable, value)
+            return 'const static {0} {1} = {2};'.format(typename, variable, value)
         elif language == 'cpp':
             return 'const {0} {1} = {2};'.format(typename, variable, value)
         elif language == 'cs':
