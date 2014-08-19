@@ -82,7 +82,7 @@ class Source:
     @staticmethod
     def getextern(typename, variable, language):
         if language == 'm':
-            return 'extern const {0} {1};'.format(typename, variable)
+            return 'extern const static {0} {1};'.format(typename, variable)
         elif language == 'cpp':
             return '\textern const {0} {1};'.format(typename, variable)
         else:
