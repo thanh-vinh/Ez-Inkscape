@@ -178,7 +178,7 @@ class Element:
     def getheader(self, language = 'm'):
         if language == 'm' or language == 'cpp':
             name = self.getname()
-            source = '{0}\n{1}\n{2}\n{3}\n\n'.format(
+            source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(
                 Source.getexternstringconstant(name, language),
                 Source.getexternfloatconstant('{0}_X'.format(name), language),
                 Source.getexternfloatconstant('{0}_Y'.format(name), language),
@@ -207,7 +207,7 @@ class Element:
         
         # Source
         name = self.getname()
-        source = '{0}\n{1}\n{2}\n{3}\n\n'.format(
+        source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(
             Source.getstringconstant(name, '"{0}.png"'.format(self._id), language),
             Source.getfloatconstant('{0}_X'.format(name), x, language),
             Source.getfloatconstant('{0}_Y'.format(name), y, language),
