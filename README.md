@@ -1,2 +1,2 @@
-ez-inkscape
+Ez-Inkscape
 ===========

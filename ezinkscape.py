@@ -17,32 +17,119 @@ INKSCAPE_NAMESPACE = 'http://www.inkscape.org/namespaces/inkscape'
 #
 class Source:
     @staticmethod
-    def getSource(typename, variable, value, language):
-        if language == 'objective-c':
+    def getheaderfileheader(classname, language):
+        classinterface = ''
+        if language == 'm':
+            classinterface = '@interface {0} : NSObject'.format(classname)
+        elif language == 'cpp':
+            classinterface = 'public class {0} {{\npubic:\n'.format(classname)
+        else:
+            classinterface = 'public class {0} {{\n'.format(classname)
+        
+        header = (
+            '//\n'
+            '// Generate by EzInkscape\n'
+            '// Language: {0}\n'
+            '// Date: {1}\n'
+            '//\n\n'
+            '{2}\n\n'
+        ).format(language, time.strftime('%d/%m/%Y %H:%M:%S'), classinterface)
+        
+        return header
+    
+    @staticmethod
+    def getheaderfooter(language):
+        if language == 'm':
+            return '@end\n'
+        else:
+            return '}\n'
+    
+    @staticmethod
+    def getsourcefileheader(classname, language):
+        importfile = ''
+        if language == 'm':
+            importfile = '#import "{0}.h"'.format(classname)
+        elif language == 'cpp':
+            importfile = '#include "{0}.h"'.format(classname)
+        
+        classinterface = ''
+        if language == 'm':
+            classinterface = '@implementation {0}\n'.format(classname)
+        elif language == 'cs' or language == 'java':
+            classinterface = 'public class {0} {{\n'.format(classname)
+        
+        header = (
+            '//\n'
+            '// Generate by EzInkscape\n'
+            '// Language: {0}\n'
+            '// Date: {1}\n'
+            '//\n\n'
+            '{2}\n\n'
+            '{3}\n\n'
+        ).format(language, time.strftime('%d/%m/%Y %H:%M:%S'), importfile, classinterface)
+        
+        return header
+    
+    @staticmethod
+    def getsourcefooter(language):
+        if language == 'm':
+            return '@end\n'
+        elif language == 'cpp':
+            return '\n'
+        else:
+            return '}\n'
+    
+    @staticmethod
+    def getextern(typename, variable, language):
+        if language == 'm':
+            return 'extern const {0} {1};'.format(typename, variable)
+        elif language == 'cpp':
+            return '\textern const {0} {1};'.format(typename, variable)
+        else:
+            return 'Only support languages: objective-c, cpp.'
+    
+    @staticmethod
+    def getexternstringconstant(variable, language):
+        if language == 'm':
+            return Source.getextern('NSString', '*{0}'.format(variable), language)
+        elif language == 'cpp':
+            return Source.getextern('char*', variable, language)
+        elif language == 'cs':
+            return Source.getextern('string', variable, language)
+        elif language == 'java':
+            return Source.getextern('String', variable, language)
+    
+    @staticmethod
+    def getexternfloatconstant(variable, language):
+        return Source.getextern('float', variable, language)
+    
+    @staticmethod
+    def getsource(typename, variable, value, language):
+        if language == 'm':
             return 'const {0} {1} = {2};'.format(typename, variable, value)
         elif language == 'cpp':
-            return '\tpublic const {0} {1} = {2};'.format(typename, variable, value)
+            return 'const {0} {1} = {2};'.format(typename, variable, value)
         elif language == 'cs':
-            return '\npublic const {0} {1} = {2};'.format(typename, variable, value)
+            return '\tpublic const {0} {1} = {2};'.format(typename, variable, value)
         elif language == 'java':
-            return '\npublic static {0} {1} = {2};'.format(typename, variable, value)
+            return '\tpublic static {0} {1} = {2};'.format(typename, variable, value)
         else:
             return 'Only support languages: objective-c, cpp, cs, java.'
     
     @staticmethod
-    def getStringConstant(variable, value, language):
-        if language == 'objective-c':
-            return Source.getSource('NSString', '*{0}'.format(variable), value, language)
+    def getstringconstant(variable, value, language):
+        if language == 'm':
+            return Source.getsource('NSString', '*{0}'.format(variable), '@{0}'.format(value), language)
         elif language == 'cpp':
-            return getSource('char*', variable, value, language)
+            return Source.getsource('char*', variable, value, language)
         elif language == 'cs':
-            return getSource('string', variable,  value, language)
+            return Source.getsource('string', variable,  value, language)
         elif language == 'java':
-            return getSource('String', variable,  value, language)
+            return Source.getsource('String', variable,  value, language)
     
     @staticmethod
-    def getFloatConstant(variable, value, language):
-        return Source.getSource('float', variable, value, language)
+    def getfloatconstant(variable, value, language):
+        return Source.getsource('float', variable, value, language)
 
 class Element:
     _query = ''
@@ -88,10 +175,25 @@ class Element:
         name = name.replace(' ', '_')
         return name;
     
+    def getheader(self, language = 'm'):
+        if language == 'm' or language == 'cpp':
+            name = self.getname()
+            source = '{0}\n{1}\n{2}\n{3}\n\n'.format(
+                Source.getexternstringconstant(name, language),
+                Source.getexternfloatconstant('{0}_X'.format(name), language),
+                Source.getexternfloatconstant('{0}_X'.format(name), language),
+                Source.getexternfloatconstant('{0}_X'.format(name), language),
+                Source.getexternfloatconstant('{0}_X'.format(name), language)
+            )
+            
+            return source
+        else:
+            return None
+    
     ##
     # Generate source code.
     #
-    def getsource(self, language = 'objective-c', anchor='top-left'):
+    def getsource(self, language = 'm', anchor='top-left'):
         x = self._x
         y = self._y
         
@@ -106,11 +208,11 @@ class Element:
         # Source
         name = self.getname()
         source = '{0}\n{1}\n{2}\n{3}\n\n'.format(
-            Source.getStringConstant(name, '@"{0}.png"'.format(self._id), language),
-            Source.getFloatConstant('{0}_X'.format(name), x, language),
-            Source.getFloatConstant('{0}_X'.format(name), y, language),
-            Source.getFloatConstant('{0}_X'.format(name), self._width, language),
-            Source.getFloatConstant('{0}_X'.format(name), self._height, language)
+            Source.getstringconstant(name, '"{0}.png"'.format(self._id), language),
+            Source.getfloatconstant('{0}_X'.format(name), x, language),
+            Source.getfloatconstant('{0}_X'.format(name), y, language),
+            Source.getfloatconstant('{0}_X'.format(name), self._width, language),
+            Source.getfloatconstant('{0}_X'.format(name), self._height, language)
         )
         
         return source
@@ -217,26 +319,42 @@ class SVG:
             if id == element.getid():
                 return element
     
-    def exportsource(self, outputfile, language, anchor):
+    def exportsource(self, classname, sourcepath, language, anchor):
         print('Export source...')
-        # Write header
-        f = open(outputfile, 'w');
-        f.write('//\n');
-        f.write('// Generated by EzInkscape\n');
-        f.write('// Inkscape: %s\n' % self._filename);
-        f.write('// Language: %s\n' % language);
-        f.write('// Anchor: %s\n' % anchor)
-        f.write('// Date: %s\n' % time.strftime('%d/%m/%Y %H:%M:%S'));
-        f.write('//\n\n');
+        # Header
+        if language == 'm' or language == 'cpp':
+            headerfile = '{0}/{1}.h'.format(sourcepath, classname)
+            print('Header file: {0}'.format(headerfile))
+            
+            f = open(headerfile, 'w')
+            f.write(Source.getheaderfileheader(classname, language))
+            
+            # Extern values
+            for layer in self._layers:
+                print(' - Layer %s' % layer)
+                f.write('// %s\n' % layer)
+                for element in layer.getelements():
+                    print('  + Element: %s' % element)
+                    f.write(element.getheader(language))
+            
+            f.write(Source.getheaderfooter(language))
+            f.close()
         
-        # Get source
+        # Source
+        sourcefile = '{0}/{1}.{2}'.format(sourcepath, classname, language)
+        print('Source file: {0}'.format(sourcefile))
+        
+        f = open(sourcefile, 'w')
+        f.write(Source.getsourcefileheader(classname, language))
+        
         for layer in self._layers:
             print(' - Layer %s' % layer)
             f.write('// %s\n' % layer)
             for element in layer.getelements():
                 print('  + Element: %s' % element)
-                f.write(element.getsource())
+                f.write(element.getsource(language))
         
+        f.write(Source.getsourcefooter(language))
         f.close()
         print('Done.')
     
@@ -279,8 +397,9 @@ def main(argv):
     )
     parser.add_argument('-inkscape', help = 'Inkscape execute path', default = 'inkscape')
     parser.add_argument('-input', help = 'Inkscape input file', required = True)
-    parser.add_argument('-source', help = 'Source file', default = None)
-    parser.add_argument('-language', help = 'Source language', default = 'objective-c')
+    parser.add_argument('-class', help = 'Class name', default = 'Assets')
+    parser.add_argument('-source', help = 'Source path', default = None)
+    parser.add_argument('-language', help = 'Source language', default = 'm')
     parser.add_argument('-anchor', help = 'Anchor, default Top+Left', default = 'top-left')
     parser.add_argument('-textures', help = 'Textures path', default = None)
     parser.add_argument('-dpi', help = 'DPI, default 90', type = int, default = 90)
@@ -290,7 +409,8 @@ def main(argv):
     # TODO source: input class name, and path then generate both .h & .m files
     inkscape = args['inkscape']
     inputfile = args['input']
-    sourcefile = args['source']
+    classname = args['class']
+    sourcepath = args['source']
     language = args['language']
     anchor = args['anchor']
     texturespath = args['textures']
@@ -298,8 +418,8 @@ def main(argv):
     
     # SVG
     svg = SVG(inkscape, inputfile)
-    if sourcefile is not None:
-        svg.exportsource(sourcefile, language, anchor)
+    if sourcepath is not None:
+        svg.exportsource(classname, sourcepath, language, anchor)
     if texturespath is not None:
         svg.exporttexures(texturespath, dpi)
 
