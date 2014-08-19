@@ -82,7 +82,7 @@ class Source:
     @staticmethod
     def getextern(typename, variable, language):
         if language == 'm':
-            return 'extern const static {0} {1};'.format(typename, variable)
+            return 'extern const {0} {1};'.format(typename, variable)
         elif language == 'cpp':
             return '\textern const {0} {1};'.format(typename, variable)
         else:
@@ -106,7 +106,7 @@ class Source:
     @staticmethod
     def getsource(typename, variable, value, language):
         if language == 'm':
-            return 'const static {0} {1} = {2};'.format(typename, variable, value)
+            return 'const {0} {1} = {2};'.format(typename, variable, value)
         elif language == 'cpp':
             return 'const {0} {1} = {2};'.format(typename, variable, value)
         elif language == 'cs':
@@ -181,9 +181,9 @@ class Element:
             source = '{0}\n{1}\n{2}\n{3}\n\n'.format(
                 Source.getexternstringconstant(name, language),
                 Source.getexternfloatconstant('{0}_X'.format(name), language),
-                Source.getexternfloatconstant('{0}_X'.format(name), language),
-                Source.getexternfloatconstant('{0}_X'.format(name), language),
-                Source.getexternfloatconstant('{0}_X'.format(name), language)
+                Source.getexternfloatconstant('{0}_Y'.format(name), language),
+                Source.getexternfloatconstant('{0}_W'.format(name), language),
+                Source.getexternfloatconstant('{0}_H'.format(name), language)
             )
             
             return source
@@ -210,9 +210,9 @@ class Element:
         source = '{0}\n{1}\n{2}\n{3}\n\n'.format(
             Source.getstringconstant(name, '"{0}.png"'.format(self._id), language),
             Source.getfloatconstant('{0}_X'.format(name), x, language),
-            Source.getfloatconstant('{0}_X'.format(name), y, language),
-            Source.getfloatconstant('{0}_X'.format(name), self._width, language),
-            Source.getfloatconstant('{0}_X'.format(name), self._height, language)
+            Source.getfloatconstant('{0}_Y'.format(name), y, language),
+            Source.getfloatconstant('{0}_W'.format(name), self._width, language),
+            Source.getfloatconstant('{0}_H'.format(name), self._height, language)
         )
         
         return source
