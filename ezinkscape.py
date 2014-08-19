@@ -12,6 +12,38 @@ from xml.etree import ElementTree
 SVG_NAMESPACE = "http://www.w3.org/2000/svg"
 INKSCAPE_NAMESPACE = 'http://www.inkscape.org/namespaces/inkscape'
 
+##
+# Format source code.
+#
+class Source:
+    @staticmethod
+    def getSource(typename, variable, value, language):
+        if language == 'objective-c':
+            return 'const {0} {1} = {2};'.format(typename, variable, value)
+        elif language == 'cpp':
+            return '\tpublic const {0} {1} = {2};'.format(typename, variable, value)
+        elif language == 'cs':
+            return '\npublic const {0} {1} = {2};'.format(typename, variable, value)
+        elif language == 'java':
+            return '\npublic static {0} {1} = {2};'.format(typename, variable, value)
+        else:
+            return 'Only support languages: objective-c, cpp, cs, java.'
+    
+    @staticmethod
+    def getStringConstant(variable, value, language):
+        if language == 'objective-c':
+            return Source.getSource('NSString', '*{0}'.format(variable), value, language)
+        elif language == 'cpp':
+            return getSource('char*', variable, value, language)
+        elif language == 'cs':
+            return getSource('string', variable,  value, language)
+        elif language == 'java':
+            return getSource('String', variable,  value, language)
+    
+    @staticmethod
+    def getFloatConstant(variable, value, language):
+        return Source.getSource('float', variable, value, language)
+
 class Element:
     _query = ''
     _id = ''
@@ -72,18 +104,14 @@ class Element:
             y = y + (self._height / 2)
         
         # Source
-        if language == 'objective-c':
-            source = 'const NSString *%s = @"%s.png";\n' % (self.getname(), self._id)
-            source += 'const static float %s_X = %s;\n' % (self.getname(), x)
-            source += 'const static float %s_Y = %s;\n' % (self.getname(), y)
-            source += 'const static float %s_W = %s;\n' % (self.getname(), self._width)
-            source += 'const static float %s_H = %s;\n\n' % (self.getname(), self._height)
-        elif language == 'cpp':
-            source = 'WIP\n'
-        elif language == 'cs':
-            source = 'WIP\n'
-        else:
-            source = 'Not support\n'
+        name = self.getname()
+        source = '{0}\n{1}\n{2}\n{3}\n\n'.format(
+            Source.getStringConstant(name, '@"{0}.png"'.format(self._id), language),
+            Source.getFloatConstant('{0}_X'.format(name), x, language),
+            Source.getFloatConstant('{0}_X'.format(name), y, language),
+            Source.getFloatConstant('{0}_X'.format(name), self._width, language),
+            Source.getFloatConstant('{0}_X'.format(name), self._height, language)
+        )
         
         return source
     
@@ -92,7 +120,7 @@ class Element:
 
 ##
 # Present a layer in SVG file.
-# 
+#
 class Layer:
     _svg = None
     _name = ""          #layer name
@@ -130,22 +158,6 @@ class Layer:
         name = 'k%s' % self._name;
         name = name.replace(' ', '_')
         return name;
-    
-    ##
-    # Print layer source only, not include elements source
-    #
-    def getsource(self, language = 'objective-c', anchor='top-left'):
-        if language == 'objective-c':
-            source = 'const static float %s_X = %s;\n' % (self.getname(), self._x)
-            source += 'const static float %s_Y = %s;\n\n' % (self.getname(), self._y)
-        elif language == 'cpp':
-            source = 'WIP\n'
-        elif language == 'cs':
-            source = 'WIP\n'
-        else:
-            source = 'Not support\n'
-        
-        return source
     
     def __str__(self):
         return self._name
@@ -221,7 +233,6 @@ class SVG:
         for layer in self._layers:
             print(' - Layer %s' % layer)
             f.write('// %s\n' % layer)
-            f.write(layer.getsource())
             for element in layer.getelements():
                 print('  + Element: %s' % element)
                 f.write(element.getsource())
@@ -276,6 +287,7 @@ def main(argv):
     args = vars(parser.parse_args(argv))
     
     # Parse args
+    # TODO source: input class name, and path then generate both .h & .m files
     inkscape = args['inkscape']
     inputfile = args['input']
     sourcefile = args['source']
