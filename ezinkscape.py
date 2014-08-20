@@ -203,7 +203,7 @@ class Element:
         y = float(self._svg.getheight()) - float(self._y)
         if self._svg.getanchor() == 'center':
             x = float(x) + (float(self._width) / 2)
-            y = float(y) + (float(self._height) / 2)
+            y = float(y) - (float(self._height) / 2)
         
         # Source
         source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(
@@ -281,20 +281,6 @@ class SVG:
         self._parse()
     
     ##
-    # TODO Parse svg file for support layer.
-    #
-    def _parse(self):
-        print('Parse SVG file: %s...' % self._filename)
-        tree = ElementTree.parse(self._filename)
-        root = tree.getroot()
-        self._width = root.get('width')
-        self._height = root.get('height')
-        
-        for node in root.findall('{%s}g' % SVG_NAMESPACE):
-            layer = Layer(self, node)
-            self._layers.append(layer)
-    
-    ##
     # Query all objects
     #
     def _queryall(self):
@@ -311,14 +297,20 @@ class SVG:
             element = Element(self, line)
             self._elements.append(element)
     
-    # def query(self, id):
-    #     # Query an object using inkscape command line
-    #     popen = subprocess.Popen([self._inkscape, self._filename, '--query-id=%s' % id],
-    #         stdout = subprocess.PIPE,
-    #         stderr = subprocess.PIPE
-    #     )
-    #     query, error = popen.communicate()
-    #     return query
+    ##
+    # TODO Parse svg file for support layer.
+    #
+    def _parse(self):
+        print('Parse SVG file: %s...' % self._filename)
+        tree = ElementTree.parse(self._filename)
+        root = tree.getroot()
+        self._width = root.get('width')
+        self._height = root.get('height')
+        print('********************' + self._height)
+        
+        for node in root.findall('{%s}g' % SVG_NAMESPACE):
+            layer = Layer(self, node)
+            self._layers.append(layer)
     
     def getwidth(self):
         return self._width
