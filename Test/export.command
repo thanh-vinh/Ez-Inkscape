@@ -8,7 +8,7 @@ INPUT="drawing.svg"
 CLASS="Assets"
 SOURCE="Output/Sources"
 LANGUAGE="m" #m, cpp, cs, java
-ANCHOR="top-left" #top-lef, center
+ANCHOR="center" #top-lef, center
 TEXTURES="Output/Textures"
 DPI=90
 

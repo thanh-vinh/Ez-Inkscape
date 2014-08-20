@@ -175,7 +175,7 @@ class Element:
         name = name.replace(' ', '_')
         return name;
     
-    def getheader(self, language = 'm'):
+    def getheader(self, language):
         if language == 'm' or language == 'cpp':
             name = self.getname()
             source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(
@@ -193,7 +193,7 @@ class Element:
     ##
     # Generate source code.
     #
-    def getsource(self, language = 'm', anchor='top-left'):
+    def getsource(self, language, anchor):
         x = self._x
         y = self._y
         
@@ -202,8 +202,8 @@ class Element:
             # Anything changes
             pass
         elif anchor == 'center':
-            x = x + (self._width / 2)
-            y = y + (self._height / 2)
+            x = float(x) + (float(self._width) / 2)
+            y = float(y) + (float(self._height) / 2)
         
         # Source
         name = self.getname()
@@ -352,7 +352,7 @@ class SVG:
             f.write('// %s\n' % layer)
             for element in layer.getelements():
                 print('  + Element: %s' % element)
-                f.write(element.getsource(language))
+                f.write(element.getsource(language, anchor))
         
         f.write(Source.getsourcefooter(language))
         f.close()
