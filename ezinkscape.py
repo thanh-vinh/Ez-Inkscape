@@ -132,6 +132,7 @@ class Source:
         return Source.getsource('float', variable, value, language)
 
 class Element:
+    _svg = None
     _query = ''
     _id = ''
     _x = 0
@@ -143,7 +144,8 @@ class Element:
     # Format data like: svg2,177.14285,223.79076,285.71428,314.28571
     # store in a line of query info
     #
-    def __init__(self, query):
+    def __init__(self, svg, query):
+        self._svg = svg
         self._query = query
         attributes = query.split(',')
         self._id = attributes[0]
@@ -193,20 +195,17 @@ class Element:
     ##
     # Generate source code.
     #
-    def getsource(self, language, anchor):
-        x = self._x
-        y = self._y
+    def getsource(self, language):
+        name = self.getname()
         
         # Change position base on anchor
-        if anchor == 'top-left':
-            # Anything changes
-            pass
-        elif anchor == 'center':
+        x = self._x
+        y = float(self._svg.getheight()) - float(self._y)
+        if self._svg.getanchor() == 'center':
             x = float(x) + (float(self._width) / 2)
             y = float(y) + (float(self._height) / 2)
         
         # Source
-        name = self.getname()
         source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(
             Source.getstringconstant(name, '"{0}.png"'.format(self._id), language),
             Source.getfloatconstant('{0}_X'.format(name), x, language),
@@ -225,7 +224,7 @@ class Element:
 #
 class Layer:
     _svg = None
-    _name = ""          #layer name
+    _name = ''          #layer name
     _x = 0
     _y = 0
     _elements = list()  #objects
@@ -267,12 +266,16 @@ class Layer:
 class SVG:
     _inkscape = ''
     _filename = ''
+    _width = 0
+    _height = 0
+    _anchor = 'center'
     _layers = list()            # list of Layers
     _elements = list()     #all elements from query command
     
-    def __init__(self, inkscape, filename):
+    def __init__(self, inkscape, filename, anchor):
         self._filename = filename
         self._inkscape = inkscape
+        self._anchor = anchor
         self._layers = list() #should be initialized here for instances
         self._queryall()
         self._parse()
@@ -282,9 +285,12 @@ class SVG:
     #
     def _parse(self):
         print('Parse SVG file: %s...' % self._filename)
-        self._queryall()
         tree = ElementTree.parse(self._filename)
-        for node in tree.findall('{%s}g' % SVG_NAMESPACE):
+        root = tree.getroot()
+        self._width = root.get('width')
+        self._height = root.get('height')
+        
+        for node in root.findall('{%s}g' % SVG_NAMESPACE):
             layer = Layer(self, node)
             self._layers.append(layer)
     
@@ -302,7 +308,7 @@ class SVG:
         # Parse that query
         elements = query.splitlines()
         for line in elements:
-            element = Element(line)
+            element = Element(self, line)
             self._elements.append(element)
     
     # def query(self, id):
@@ -314,12 +320,21 @@ class SVG:
     #     query, error = popen.communicate()
     #     return query
     
+    def getwidth(self):
+        return self._width
+    
+    def getheight(self):
+        return self._height
+    
+    def getanchor(self):
+        return self._anchor
+    
     def getelement(self, id):
         for element in self._elements:
             if id == element.getid():
                 return element
     
-    def exportsource(self, classname, sourcepath, language, anchor):
+    def exportsource(self, classname, sourcepath, language):
         print('Export source...')
         # Header
         if language == 'm' or language == 'cpp':
@@ -352,7 +367,7 @@ class SVG:
             f.write('// %s\n' % layer)
             for element in layer.getelements():
                 print('  + Element: %s' % element)
-                f.write(element.getsource(language, anchor))
+                f.write(element.getsource(language))
         
         f.write(Source.getsourcefooter(language))
         f.close()
@@ -400,7 +415,7 @@ def main(argv):
     parser.add_argument('-class', help = 'Class name', default = 'Assets')
     parser.add_argument('-source', help = 'Source path', default = None)
     parser.add_argument('-language', help = 'Source language', default = 'm')
-    parser.add_argument('-anchor', help = 'Anchor, default Top+Left', default = 'top-left')
+    parser.add_argument('-anchor', help = 'Anchor, default center', default = 'center')
     parser.add_argument('-textures', help = 'Textures path', default = None)
     parser.add_argument('-dpi', help = 'DPI, default 90', type = int, default = 90)
     args = vars(parser.parse_args(argv))
@@ -417,9 +432,9 @@ def main(argv):
     dpi = args['dpi']
     
     # SVG
-    svg = SVG(inkscape, inputfile)
+    svg = SVG(inkscape, inputfile, anchor)
     if sourcepath is not None:
-        svg.exportsource(classname, sourcepath, language, anchor)
+        svg.exportsource(classname, sourcepath, language)
     if texturespath is not None:
         svg.exporttexures(texturespath, dpi)
 
