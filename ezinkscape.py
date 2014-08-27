@@ -177,16 +177,22 @@ class Element:
         name = name.replace(' ', '_')
         return name;
     
-    def getheader(self, language):
+    def getheader(self, language, query):
         if language == 'm' or language == 'cpp':
             name = self.getname()
-            source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(
-                Source.getexternstringconstant(name, language),
-                Source.getexternfloatconstant('{0}_X'.format(name), language),
-                Source.getexternfloatconstant('{0}_Y'.format(name), language),
-                Source.getexternfloatconstant('{0}_W'.format(name), language),
-                Source.getexternfloatconstant('{0}_H'.format(name), language)
-            )
+            texture = Source.getexternstringconstant(name, language)
+            x = Source.getexternfloatconstant('{0}_X'.format(name), language)
+            y = Source.getexternfloatconstant('{0}_Y'.format(name), language)
+            width = Source.getexternfloatconstant('{0}_W'.format(name), language)
+            height = Source.getexternfloatconstant('{0}_H'.format(name), language)
+            source = ''
+            
+            if (query == 'all'):
+                source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(texture, x, y, width, height)
+            elif (query == 'xy'):
+                source = '{0}\n{1}\n{2}\n\n'.format(texture, x, y)
+            elif (query == 'size'):
+                source = '{0}\n{1}\n{2}\n\n'.format(texture, width, height)
             
             return source
         else:
@@ -195,10 +201,9 @@ class Element:
     ##
     # Generate source code.
     #
-    def getsource(self, language):
-        name = self.getname()
-        
+    def getsource(self, language, query):
         # Change position base on anchor
+        name = self.getname()
         x = self._x
         y = float(self._svg.getheight()) - float(self._y)
         if self._svg.getanchor() == 'center':
@@ -206,13 +211,19 @@ class Element:
             y = float(y) - (float(self._height) / 2)
         
         # Source
-        source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(
-            Source.getstringconstant(name, '"{0}.png"'.format(self._id), language),
-            Source.getfloatconstant('{0}_X'.format(name), x, language),
-            Source.getfloatconstant('{0}_Y'.format(name), y, language),
-            Source.getfloatconstant('{0}_W'.format(name), self._width, language),
-            Source.getfloatconstant('{0}_H'.format(name), self._height, language)
-        )
+        texture = Source.getstringconstant(name, '"{0}.png"'.format(self._id), language)
+        x = Source.getfloatconstant('{0}_X'.format(name), x, language)
+        y = Source.getfloatconstant('{0}_Y'.format(name), y, language)
+        width = Source.getfloatconstant('{0}_W'.format(name), self._width, language)
+        height = Source.getfloatconstant('{0}_H'.format(name), self._height, language)
+        source = ''
+        
+        if (query == 'all'):
+            source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(texture, x, y, width, height)
+        elif (query == 'xy'):
+            source = '{0}\n{1}\n{2}\n\n'.format(texture, x, y)
+        elif (query == 'size'):
+            source = '{0}\n{1}\n{2}\n\n'.format(texture, width, height)
         
         return source
     
@@ -326,7 +337,7 @@ class SVG:
             if id == element.getid():
                 return element
     
-    def exportsource(self, classname, sourcepath, language):
+    def exportsource(self, classname, sourcepath, language, query):
         print('Export source...')
         # Header
         if language == 'm' or language == 'cpp':
@@ -342,7 +353,7 @@ class SVG:
                 f.write('// %s\n' % layer)
                 for element in layer.getelements():
                     print('  + Element: %s' % element)
-                    f.write(element.getheader(language))
+                    f.write(element.getheader(language, query))
             
             f.write(Source.getheaderfooter(language))
             f.close()
@@ -359,7 +370,7 @@ class SVG:
             f.write('// %s\n' % layer)
             for element in layer.getelements():
                 print('  + Element: %s' % element)
-                f.write(element.getsource(language))
+                f.write(element.getsource(language, query))
         
         f.write(Source.getsourcefooter(language))
         f.close()
@@ -408,6 +419,7 @@ def main(argv):
     parser.add_argument('-source', help = 'Source path', default = None)
     parser.add_argument('-language', help = 'Source language', default = 'm')
     parser.add_argument('-anchor', help = 'Anchor, default center', default = 'center')
+    parser.add_argument('-query', help = 'Query values, xy and/or size', default = 'xy')
     parser.add_argument('-textures', help = 'Textures path', default = None)
     parser.add_argument('-dpi', help = 'DPI, default 90', type = int, default = 90)
     args = vars(parser.parse_args(argv))
@@ -420,13 +432,14 @@ def main(argv):
     sourcepath = args['source']
     language = args['language']
     anchor = args['anchor']
+    query = args['query']
     texturespath = args['textures']
     dpi = args['dpi']
     
     # SVG
     svg = SVG(inkscape, inputfile, anchor)
     if sourcepath is not None:
-        svg.exportsource(classname, sourcepath, language)
+        svg.exportsource(classname, sourcepath, language, query)
     if texturespath is not None:
         svg.exporttexures(texturespath, dpi)
 
