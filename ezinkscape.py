@@ -12,6 +12,20 @@ from xml.etree import ElementTree
 SVG_NAMESPACE = "http://www.w3.org/2000/svg"
 INKSCAPE_NAMESPACE = 'http://www.inkscape.org/namespaces/inkscape'
 
+LANGUAGE_OBJECTIVE_C = 'm'
+LANGUAGE_CPP = 'cpp'
+LANGUAGE_CS = 'cs'
+LANGUAGE_JAVA = 'java'
+
+QUERY_POSITION = 'position'
+QUERY_SIZE = 'size'
+QUERY_ALL = 'all'
+
+ANCHOR_CENTER = 'center'
+ANCHOR_TOP_LEFT = 'top-left'
+
+DEFAULT_DPI = 90
+
 ##
 # Format source code.
 #
@@ -19,9 +33,9 @@ class Source:
     @staticmethod
     def getheaderfileheader(classname, language):
         classinterface = ''
-        if language == 'm':
+        if language == LANGUAGE_OBJECTIVE_C:
             classinterface = '@interface {0} : NSObject'.format(classname)
-        elif language == 'cpp':
+        elif language == LANGUAGE_CPP:
             classinterface = 'public class {0} {{\npubic:\n'.format(classname)
         else:
             classinterface = 'public class {0} {{\n'.format(classname)
@@ -39,7 +53,7 @@ class Source:
     
     @staticmethod
     def getheaderfooter(language):
-        if language == 'm':
+        if language == LANGUAGE_OBJECTIVE_C:
             return '@end\n'
         else:
             return '}\n'
@@ -47,15 +61,15 @@ class Source:
     @staticmethod
     def getsourcefileheader(classname, language):
         importfile = ''
-        if language == 'm':
+        if language == LANGUAGE_OBJECTIVE_C:
             importfile = '#import "{0}.h"'.format(classname)
-        elif language == 'cpp':
+        elif language == LANGUAGE_CPP:
             importfile = '#include "{0}.h"'.format(classname)
         
         classinterface = ''
-        if language == 'm':
+        if language == LANGUAGE_OBJECTIVE_C:
             classinterface = '@implementation {0}\n'.format(classname)
-        elif language == 'cs' or language == 'java':
+        elif language == LANGUAGE_CS or language == LANGUAGE_JAVA:
             classinterface = 'public class {0} {{\n'.format(classname)
         
         header = (
@@ -72,31 +86,31 @@ class Source:
     
     @staticmethod
     def getsourcefooter(language):
-        if language == 'm':
+        if language == LANGUAGE_OBJECTIVE_C:
             return '@end\n'
-        elif language == 'cpp':
+        elif language == LANGUAGE_CPP:
             return '\n'
         else:
             return '}\n'
     
     @staticmethod
     def getextern(typename, variable, language):
-        if language == 'm':
+        if language == LANGUAGE_OBJECTIVE_C:
             return 'extern const {0} {1};'.format(typename, variable)
-        elif language == 'cpp':
+        elif language == LANGUAGE_CPP:
             return '\textern const {0} {1};'.format(typename, variable)
         else:
             return 'Only support languages: objective-c, cpp.'
     
     @staticmethod
     def getexternstringconstant(variable, language):
-        if language == 'm':
+        if language == LANGUAGE_OBJECTIVE_C:
             return Source.getextern('NSString', '*{0}'.format(variable), language)
-        elif language == 'cpp':
+        elif language == LANGUAGE_CPP:
             return Source.getextern('char*', variable, language)
-        elif language == 'cs':
+        elif language == LANGUAGE_CS:
             return Source.getextern('string', variable, language)
-        elif language == 'java':
+        elif language == LANGUAGE_JAVA:
             return Source.getextern('String', variable, language)
     
     @staticmethod
@@ -105,26 +119,26 @@ class Source:
     
     @staticmethod
     def getsource(typename, variable, value, language):
-        if language == 'm':
+        if language == LANGUAGE_OBJECTIVE_C:
             return 'const {0} {1} = {2};'.format(typename, variable, value)
-        elif language == 'cpp':
+        elif language == LANGUAGE_CPP:
             return 'const {0} {1} = {2};'.format(typename, variable, value)
-        elif language == 'cs':
+        elif language == LANGUAGE_CS:
             return '\tpublic const {0} {1} = {2};'.format(typename, variable, value)
-        elif language == 'java':
+        elif language == LANGUAGE_JAVA:
             return '\tpublic static {0} {1} = {2};'.format(typename, variable, value)
         else:
             return 'Only support languages: objective-c, cpp, cs, java.'
     
     @staticmethod
     def getstringconstant(variable, value, language):
-        if language == 'm':
+        if language == LANGUAGE_OBJECTIVE_C:
             return Source.getsource('NSString', '*{0}'.format(variable), '@{0}'.format(value), language)
-        elif language == 'cpp':
+        elif language == LANGUAGE_CPP:
             return Source.getsource('char*', variable, value, language)
-        elif language == 'cs':
+        elif language == LANGUAGE_CS:
             return Source.getsource('string', variable,  value, language)
-        elif language == 'java':
+        elif language == LANGUAGE_JAVA:
             return Source.getsource('String', variable,  value, language)
     
     @staticmethod
@@ -178,7 +192,7 @@ class Element:
         return name;
     
     def getheader(self, language, query):
-        if language == 'm' or language == 'cpp':
+        if language == LANGUAGE_OBJECTIVE_C or language == LANGUAGE_CPP:
             name = self.getname()
             texture = Source.getexternstringconstant(name, language)
             x = Source.getexternfloatconstant('{0}_X'.format(name), language)
@@ -187,11 +201,11 @@ class Element:
             height = Source.getexternfloatconstant('{0}_H'.format(name), language)
             source = ''
             
-            if (query == 'all'):
+            if (query == QUERY_ALL):
                 source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(texture, x, y, width, height)
-            elif (query == 'xy'):
+            elif (query == QUERY_POSITION):
                 source = '{0}\n{1}\n{2}\n\n'.format(texture, x, y)
-            elif (query == 'size'):
+            elif (query == QUERY_SIZE):
                 source = '{0}\n{1}\n{2}\n\n'.format(texture, width, height)
             
             return source
@@ -218,11 +232,11 @@ class Element:
         height = Source.getfloatconstant('{0}_H'.format(name), self._height, language)
         source = ''
         
-        if (query == 'all'):
+        if (query == QUERY_ALL):
             source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(texture, x, y, width, height)
-        elif (query == 'xy'):
+        elif (query == QUERY_POSITION):
             source = '{0}\n{1}\n{2}\n\n'.format(texture, x, y)
-        elif (query == 'size'):
+        elif (query == QUERY_SIZE):
             source = '{0}\n{1}\n{2}\n\n'.format(texture, width, height)
         
         return source
@@ -413,15 +427,21 @@ def main(argv):
     parser = argparse.ArgumentParser(
         description = 'EzSVG, export Inkscape file easy.',
     )
-    parser.add_argument('-inkscape', help = 'Inkscape execute path', default = 'inkscape')
+    parser.add_argument('-inkscape', help = 'Inkscape execute path', required = True)
     parser.add_argument('-input', help = 'Inkscape input file', required = True)
-    parser.add_argument('-class', help = 'Class name', default = 'Assets')
-    parser.add_argument('-source', help = 'Source path', default = None)
-    parser.add_argument('-language', help = 'Source language', default = 'm')
-    parser.add_argument('-anchor', help = 'Anchor, default center', default = 'center')
-    parser.add_argument('-query', help = 'Query values, xy and/or size', default = 'xy')
-    parser.add_argument('-textures', help = 'Textures path', default = None)
-    parser.add_argument('-dpi', help = 'DPI, default 90', type = int, default = 90)
+    parser.add_argument('-class', help = 'class name', default = 'Assets')
+    parser.add_argument('-source', help = 'source path', default = None)
+    parser.add_argument('-language',
+        help = 'source language, support Objective C (m), C++ (cpp), C# (cs) and Java (java)',
+        default = LANGUAGE_OBJECTIVE_C
+    )
+    parser.add_argument('-anchor', help = 'anchor: center or top-left', default = ANCHOR_CENTER)
+    parser.add_argument('-query',
+        help = 'query information, {0}, {1} or {2}'.format(QUERY_POSITION, QUERY_SIZE, QUERY_ALL),
+        default = QUERY_POSITION
+    )
+    parser.add_argument('-textures', help = 'textures output path', default = None)
+    parser.add_argument('-dpi', help = 'DPI, default 90', type = int, default = DEFAULT_DPI)
     args = vars(parser.parse_args(argv))
     
     # Parse args
