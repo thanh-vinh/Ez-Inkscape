@@ -36,17 +36,17 @@ class Source:
         if language == LANGUAGE_OBJECTIVE_C:
             classinterface = '@interface {0} : NSObject'.format(classname)
         elif language == LANGUAGE_CPP:
-            classinterface = 'public class {0} {{\npubic:\n'.format(classname)
+            classinterface = 'public class {0} \n{{\npubic:\n'.format(classname)
         else:
-            classinterface = 'public class {0} {{\n'.format(classname)
+            classinterface = 'public class {0} \n{{'.format(classname)
         
         header = (
             '//\n'
             '// Generate by EzInkscape\n'
             '// Language: {0}\n'
             '// Date: {1}\n'
-            '//\n\n'
-            '{2}\n\n'
+            '//\n'
+            '{2}\n'
         ).format(language, time.strftime('%d/%m/%Y %H:%M:%S'), classinterface)
         
         return header
@@ -70,16 +70,16 @@ class Source:
         if language == LANGUAGE_OBJECTIVE_C:
             classinterface = '@implementation {0}\n'.format(classname)
         elif language == LANGUAGE_CS or language == LANGUAGE_JAVA:
-            classinterface = 'public class {0} {{\n'.format(classname)
+            classinterface = 'public class {0} \n{{'.format(classname)
         
         header = (
             '//\n'
             '// Generate by EzInkscape\n'
             '// Language: {0}\n'
             '// Date: {1}\n'
-            '//\n\n'
-            '{2}\n\n'
-            '{3}\n\n'
+            '//\n'
+            '{2}\n'
+            '{3}\n'
         ).format(language, time.strftime('%d/%m/%Y %H:%M:%S'), importfile, classinterface)
         
         return header
@@ -143,7 +143,7 @@ class Source:
     
     @staticmethod
     def getfloatconstant(variable, value, language):
-        return Source.getsource('float', variable, value, language)
+        return Source.getsource('float', variable, '{0}f'.format(value), language)
 
 class Element:
     _svg = None
