@@ -39,25 +39,25 @@ class Source:
             classinterface = 'public class {0} \n{{\npubic:\n'.format(classname)
         else:
             classinterface = 'public class {0} \n{{'.format(classname)
-        
+
         header = (
             '//\n'
             '// Generate by EzInkscape\n'
             '// Language: {0}\n'
             '// Date: {1}\n'
-            '//\n'
-            '{2}\n'
+            '//\n\n'
+            '{2}\n\n'
         ).format(language, time.strftime('%d/%m/%Y %H:%M:%S'), classinterface)
-        
+
         return header
-    
+
     @staticmethod
     def getheaderfooter(language):
         if language == LANGUAGE_OBJECTIVE_C:
             return '@end\n'
         else:
             return '}\n'
-    
+
     @staticmethod
     def getsourcefileheader(classname, language):
         importfile = ''
@@ -65,25 +65,25 @@ class Source:
             importfile = '#import "{0}.h"'.format(classname)
         elif language == LANGUAGE_CPP:
             importfile = '#include "{0}.h"'.format(classname)
-        
+
         classinterface = ''
         if language == LANGUAGE_OBJECTIVE_C:
             classinterface = '@implementation {0}\n'.format(classname)
         elif language == LANGUAGE_CS or language == LANGUAGE_JAVA:
             classinterface = 'public class {0} \n{{'.format(classname)
-        
+
         header = (
             '//\n'
             '// Generate by EzInkscape\n'
             '// Language: {0}\n'
             '// Date: {1}\n'
-            '//\n'
-            '{2}\n'
-            '{3}\n'
+            '//\n\n'
+            '{2}\n\n'
+            '{3}\n\n'
         ).format(language, time.strftime('%d/%m/%Y %H:%M:%S'), importfile, classinterface)
-        
+
         return header
-    
+
     @staticmethod
     def getsourcefooter(language):
         if language == LANGUAGE_OBJECTIVE_C:
@@ -92,7 +92,7 @@ class Source:
             return '\n'
         else:
             return '}\n'
-    
+
     @staticmethod
     def getextern(typename, variable, language):
         if language == LANGUAGE_OBJECTIVE_C:
@@ -101,7 +101,7 @@ class Source:
             return '\textern const {0} {1};'.format(typename, variable)
         else:
             return 'Only support languages: objective-c, cpp.'
-    
+
     @staticmethod
     def getexternstringconstant(variable, language):
         if language == LANGUAGE_OBJECTIVE_C:
@@ -112,11 +112,11 @@ class Source:
             return Source.getextern('string', variable, language)
         elif language == LANGUAGE_JAVA:
             return Source.getextern('String', variable, language)
-    
+
     @staticmethod
     def getexternfloatconstant(variable, language):
         return Source.getextern('float', variable, language)
-    
+
     @staticmethod
     def getsource(typename, variable, value, language):
         if language == LANGUAGE_OBJECTIVE_C:
@@ -129,7 +129,7 @@ class Source:
             return '\tpublic static {0} {1} = {2};'.format(typename, variable, value)
         else:
             return 'Only support languages: objective-c, cpp, cs, java.'
-    
+
     @staticmethod
     def getstringconstant(variable, value, language):
         if language == LANGUAGE_OBJECTIVE_C:
@@ -140,7 +140,7 @@ class Source:
             return Source.getsource('string', variable,  value, language)
         elif language == LANGUAGE_JAVA:
             return Source.getsource('String', variable,  value, language)
-    
+
     @staticmethod
     def getfloatconstant(variable, value, language):
         return Source.getsource('float', variable, '{0}f'.format(value), language)
@@ -153,7 +153,7 @@ class Element:
     _y = 0
     _width = 0
     _height = 0
-    
+
     ##
     # Format data like: svg2,177.14285,223.79076,285.71428,314.28571
     # store in a line of query info
@@ -167,30 +167,30 @@ class Element:
         self._y = attributes[2]
         self._width = attributes[3]
         self._height = attributes[4]
-    
+
     def getquery(self):
         return self._query
-    
+
     def getid(self):
         return self._id;
-    
+
     def getx(self):
           return self._x;
-    
+
     def gety(self):
           return self._y;
-    
+
     def getwidth(self):
           return self._width;
-    
+
     def getheight(self):
           return self._height;
-    
+
     def getname(self):
-        name = 'k%s' % self._id;
+        name = 'k{0}'.format(self._id)
         name = name.replace(' ', '_')
         return name;
-    
+
     def getheader(self, language, query):
         if language == LANGUAGE_OBJECTIVE_C or language == LANGUAGE_CPP:
             name = self.getname()
@@ -200,18 +200,18 @@ class Element:
             width = Source.getexternfloatconstant('{0}_W'.format(name), language)
             height = Source.getexternfloatconstant('{0}_H'.format(name), language)
             source = ''
-            
+
             if (query == QUERY_ALL):
                 source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(texture, x, y, width, height)
             elif (query == QUERY_POSITION):
                 source = '{0}\n{1}\n{2}\n\n'.format(texture, x, y)
             elif (query == QUERY_SIZE):
                 source = '{0}\n{1}\n{2}\n\n'.format(texture, width, height)
-            
+
             return source
         else:
             return None
-    
+
     ##
     # Generate source code.
     #
@@ -223,7 +223,7 @@ class Element:
         if self._svg.getanchor() == 'center':
             x = float(x) + (float(self._width) / 2)
             y = float(y) - (float(self._height) / 2)
-        
+
         # Source
         texture = Source.getstringconstant(name, '"{0}.png"'.format(self._id), language)
         x = Source.getfloatconstant('{0}_X'.format(name), x, language)
@@ -231,16 +231,16 @@ class Element:
         width = Source.getfloatconstant('{0}_W'.format(name), self._width, language)
         height = Source.getfloatconstant('{0}_H'.format(name), self._height, language)
         source = ''
-        
+
         if (query == QUERY_ALL):
             source = '{0}\n{1}\n{2}\n{3}\n{4}\n\n'.format(texture, x, y, width, height)
         elif (query == QUERY_POSITION):
             source = '{0}\n{1}\n{2}\n\n'.format(texture, x, y)
         elif (query == QUERY_SIZE):
             source = '{0}\n{1}\n{2}\n\n'.format(texture, width, height)
-        
+
         return source
-    
+
     def __str__(self):
         return self._id
 
@@ -253,7 +253,7 @@ class Layer:
     _x = 0
     _y = 0
     _elements = list()  #objects
-    
+
     def __init__(self, svg, layer):
         # Init
         self._svg = svg
@@ -262,29 +262,28 @@ class Layer:
         element = self._svg.getelement(id)
         self._x = element.getx()
         self._y = element.gety()
-        
+
         # TODO support sub-layers + sub-groups
         # Elements
-        print(' - Parsing layer: %s' % self._name)
+        print(' - Parsing layer: {0}'.format(self._name))
         self._elements = list() #should be initialized here for instances
         for node in layer:
             id = node.get('id')
-            print('  + Found element: %s' % id)
+            print('  + Found element: {0}'.format(id))
             element = self._svg.getelement(id)
             self._elements.append(element)
-    
+
     ##
     # Get an element of this layer.
     #
     def getelements(self):
-        # print('**Layer::getelements: %s' % self._elements.count)
         return self._elements;
-    
+
     def getname(self):
-        name = 'k%s' % self._name;
+        name = 'k{0}'.format(self._name)
         name = name.replace(' ', '_')
         return name;
-    
+
     def __str__(self):
         return self._name
 
@@ -294,17 +293,17 @@ class SVG:
     _width = 0
     _height = 0
     _anchor = 'center'
-    _layers = list()            # list of Layers
-    _elements = list()     #all elements from query command
-    
+    _layers = []            # list of Layers
+    _elements = []          #all elements from query command
+
     def __init__(self, inkscape, filename, anchor):
         self._filename = filename
         self._inkscape = inkscape
         self._anchor = anchor
-        self._layers = list() #should be initialized here for instances
+        self._layers = []   #should be initialized here for instances
         self._queryall()
         self._parse()
-    
+
     ##
     # Query all objects
     #
@@ -315,98 +314,100 @@ class SVG:
             stderr = subprocess.PIPE
         )
         query, error = popen.communicate()
-        
+        popen.wait()
+
         # Parse that query
         elements = query.splitlines()
+        print error
         for line in elements:
             element = Element(self, line)
             self._elements.append(element)
-    
+
     ##
     # TODO Parse svg file for support layer.
     #
     def _parse(self):
-        print('Parse SVG file: %s...' % self._filename)
+        print('Parse SVG file: {0}...'.format(self._filename))
         tree = ElementTree.parse(self._filename)
         root = tree.getroot()
         self._width = root.get('width')
         self._height = root.get('height')
-        print('********************' + self._height)
-        
+        print('********************{0}'.format(self._height))
+
         for node in root.findall('{%s}g' % SVG_NAMESPACE):
             layer = Layer(self, node)
             self._layers.append(layer)
-    
+
     def getwidth(self):
         return self._width
-    
+
     def getheight(self):
         return self._height
-    
+
     def getanchor(self):
         return self._anchor
-    
+
     def getelement(self, id):
         for element in self._elements:
             if id == element.getid():
                 return element
-    
+
     def exportsource(self, classname, sourcepath, language, query):
         print('Export source...')
         # Header
         if language == 'm' or language == 'cpp':
             headerfile = '{0}/{1}.h'.format(sourcepath, classname)
             print('Header file: {0}'.format(headerfile))
-            
+
             f = open(headerfile, 'w')
             f.write(Source.getheaderfileheader(classname, language))
-            
+
             # Extern values
             for layer in self._layers:
-                print(' - Layer %s' % layer)
-                f.write('// %s\n' % layer)
+                print(' - Layer {0}'.format(layer))
+                f.write('// {0}\n'.format(layer))
                 for element in layer.getelements():
-                    print('  + Element: %s' % element)
+                    print('  + Element: {0}'.format(element))
                     f.write(element.getheader(language, query))
-            
+
             f.write(Source.getheaderfooter(language))
             f.close()
-        
+
         # Source
         sourcefile = '{0}/{1}.{2}'.format(sourcepath, classname, language)
         print('Source file: {0}'.format(sourcefile))
-        
+
         f = open(sourcefile, 'w')
         f.write(Source.getsourcefileheader(classname, language))
-        
+
         for layer in self._layers:
-            print(' - Layer %s' % layer)
-            f.write('// %s\n' % layer)
+            print(' - Layer {0}'.format(layer))
+            f.write('// {0}\n'.format(layer))
             for element in layer.getelements():
-                print('  + Element: %s' % element)
+                print('  + Element: {0}'.format(element))
                 f.write(element.getsource(language, query))
-        
+
         f.write(Source.getsourcefooter(language))
         f.close()
         print('Done.')
-    
+
     ##
     # Export all elements, except elements sub-elements.
     #
     def exporttexures(self, outputpath, dpi):
-        print('Export textures, saved in: %s...' % outputpath)
+        print('Export textures, saved in: {0}...'.format(outputpath))
         for layer in self._layers:
-            print(' - Layer %s' % layer)
+            print(' - Layer {0}'.format(layer))
             for element in layer.getelements():
-                print('  + Element: %s' % element)
+                print('  + Element: {0}'.format(element))
                 id = element.getid()
                 popen = subprocess.Popen(
                     [
-                        self._inkscape, '--file=%s' % self._filename,
+                        self._inkscape, '--file={0}'.format(self._filename),
                         '--export-id-only',
-                        '--export-id=%s' % id,
-                        '--export-dpi=%s' % dpi,
-                        '--export-png=%s/%s.png' % (outputpath, id)
+                        '--export-id={0}'.format(id),
+                        '--export-dpi={0}'.format(dpi),
+                        '--export-png={0}/{1}.png'.format(outputpath, id)
                     ],
                     stdout = subprocess.PIPE,
                     stderr = subprocess.PIPE
@@ -422,7 +423,7 @@ def main(argv):
     # else:
     #     inkscape = "/Applications/Inkscape.app/Contents/Resources/bin/inkscape"
     #
-    
+
     # Args information
     parser = argparse.ArgumentParser(
         description = 'EzSVG, export Inkscape file easy.',
@@ -443,7 +444,7 @@ def main(argv):
     parser.add_argument('-textures', help = 'textures output path', default = None)
     parser.add_argument('-dpi', help = 'DPI, default 90', type = int, default = DEFAULT_DPI)
     args = vars(parser.parse_args(argv))
-    
+
     # Parse args
     # TODO source: input class name, and path then generate both .h & .m files
     inkscape = args['inkscape']
@@ -455,7 +456,7 @@ def main(argv):
     query = args['query']
     texturespath = args['textures']
     dpi = args['dpi']
-    
+
     # SVG
     svg = SVG(inkscape, inputfile, anchor)
     if sourcepath is not None:

@@ -1,7 +1,7 @@
 //
 // Generate by EzInkscape
 // Language: m
-// Date: 30/08/2014 23:04:44
+// Date: 15/09/2015 21:21:10
 //
 
 @interface Assets : NSObject

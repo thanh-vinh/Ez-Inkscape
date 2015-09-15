@@ -13,6 +13,6 @@ QUERY="position" #xy, size, all
 TEXTURES="Output/Textures"
 DPI=90
 
-python $EZ_INKSCAPE -inkscape=$INKSCAPE -input=$INPUT -class=$CLASS -source=$SOURCE -language=$LANGUAGE -anchor=$ANCHOR -query=$QUERY -textures=$TEXTURES -dpi=$DPI
+python $EZ_INKSCAPE -inkscape=$INKSCAPE -input=$PWD/$INPUT -class=$CLASS -source=$SOURCE -language=$LANGUAGE -anchor=$ANCHOR -query=$QUERY -textures=$TEXTURES -dpi=$DPI
 
 echo Done...
